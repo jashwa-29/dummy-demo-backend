@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URL)
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('Hello from server!');
+  res.send('Hello0000000000000 from server!');
 });
    
 // Start server 
