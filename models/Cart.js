@@ -21,7 +21,7 @@ const cartSchema = new mongoose.Schema({
 
       weight: {
         type: String,
-        default: 1,
+        required: true,
       },
     },
   ],

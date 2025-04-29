@@ -3,8 +3,14 @@ const Product = require('../models/Product'); // Assuming you have Product model
 
 // Add product to cart
 exports.addToCart = async (req, res) => {
-  const userId = req.user.id; // Get userId from JWT token (using middleware)
-  const { productId, quantity , weight } = req.body;
+  const userId = req.user.id;
+  const { productId, quantity, weight } = req.body;
+
+  if (!productId) {
+    return res.status(400).json({ message: "Product ID is required" });
+  }
+
+  const qty = parseInt(quantity) || 1;
 
   try {
     let cart = await Cart.findOne({ userId });
@@ -13,28 +19,28 @@ exports.addToCart = async (req, res) => {
       const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
       if (itemIndex > -1) {
-        // If product exists in cart, update the quantity
-        cart.items[itemIndex].quantity += quantity || 1;
-      } else {
-        // If product doesn't exist in cart, add it
-        cart.items.push({ productId, quantity: quantity || 1  , weight});
+        const existingItem = cart.items[itemIndex];
+        existingItem.quantity = (existingItem.quantity || 0) + qty;
+        if (weight) {
+          existingItem.weight = weight; // optional: update weight if it's sent
+        }
       }
 
       await cart.save();
-      res.json(cart);
+      return res.json(cart);
     } else {
-      // If no cart found for user, create a new cart
       const newCart = new Cart({
         userId,
-        items: [{ productId, quantity: quantity || 1 }],
+        items: [{ productId, quantity: qty, weight }],
       });
       await newCart.save();
-      res.status(201).json(newCart);
+      return res.status(201).json(newCart);
     }
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 // Get user's cart
 exports.getCart = async (req, res) => {
