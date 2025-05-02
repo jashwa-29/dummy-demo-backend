@@ -31,7 +31,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', authMiddleware, cartRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/seller', sellerRoutes);
-app.use('/api/admin', orderRoutes);
+app.use('/api/order', orderRoutes);
 app.use('/api/user', userOrderRoutes);
 app.use('/api', sellerProductRoutes);
 
